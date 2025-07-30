@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Registro para la Cena de Pastores</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Registro oficial para la cena de pastores. Confirma tu asistencia de manera rápida y sencilla.">
+  <meta name="keywords" content="cena pastores, registro, iglesia, confirmación asistencia">
+  <meta name="author" content="Organización de la Cena">
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Registro Cena">
+
+  <!-- Favicon -->
+  <link rel="icon" href="pictures/Conexiones-2025.ico" />
+  <link rel="apple-touch-icon" href="pictures/Conexiones 2025.png">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Schema.org para SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "Cena de Pastores",
+    "description": "Evento especial para pastores y líderes religiosos",
+    "organizer": {
+      "@type": "Organization",
+      "name": "Organización de la Cena"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="overlay"></div>
+  <div class="grid-pattern"></div>
+
+  <div class="container">
+    <div class="main-content">
+      <!-- Formulario -->
+      <div class="form-card">
+        <div class="logo-container">
+          <!-- Opción con PNG de alta resolución -->
+          <img src="pictures/Conexiones 2025.png" alt="Logo del Evento" class="event-logo png-logo">
+        </div>
+        <div class="header">
+          <h1>Registro para Conexiones 2025</h1>
+          <p>Sesión especial de Ekklesia Juvenil para pastores y líderes juveniles regístrate aquí</p>
+        </div>
+
+        <form id="registroForm" novalidate>
+          <div class="form-group">
+            <label for="nombre">
+              <i class="fas fa-user"></i>
+              Nombre <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="nombre" name="Nombre" class="form-input" required maxlength="50" placeholder="Ingrese su nombre" autocomplete="given-name" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="apellido">
+              <i class="fas fa-user"></i>
+              Apellido <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="apellido" name="Apellido" class="form-input" required maxlength="50" placeholder="Ingrese su apellido" autocomplete="family-name" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">
+              <i class="fas fa-envelope"></i>
+              Correo electrónico <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="email" id="email" name="Correo" class="form-input" required placeholder="ejemplo@correo.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">
+              <i class="fas fa-phone"></i>
+              Teléfono <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="tel" id="telefono" name="Telefono" class="form-input" required maxlength="20" placeholder="+58 412-1234567" autocomplete="tel" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="iglesia">
+              <i class="fas fa-church"></i>
+              Iglesia / Congregación <span class="required">*</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="iglesia" name="Iglesia" class="form-input" required maxlength="150" placeholder="Nombre de su iglesia" autocomplete="organization" />
+            </div>
+          </div>
+
+          <!-- Nueva sección de ubicación -->
+          <div class="form-group">
+            <label class="location-type-label">
+              <i class="fas fa-map-marker-alt"></i>
+              Ubicación <span class="required">*</span>
+            </label>
+            
+            <!-- Checkboxes para tipo de ubicación -->
+            <div class="location-type-container">
+              <div class="checkbox-group">
+                <input type="radio" id="localidad" name="tipoUbicacion" value="localidad" class="location-radio">
+                <label for="localidad" class="checkbox-label">
+                  <i class="fas fa-flag"></i>
+                  Nacional (Panamá)
+                </label>
+              </div>
+              <div class="checkbox-group">
+                <input type="radio" id="internacional" name="tipoUbicacion" value="internacional" class="location-radio">
+                <label for="internacional" class="checkbox-label">
+                  <i class="fas fa-globe"></i>
+                  Internacional
+                </label>
+              </div>
+            </div>
+
+            <!-- Select para provincias de Panamá -->
+            <div class="input-wrapper" id="provinciaContainer" style="display: none;">
+              <select id="provincia" name="Ubicacion" class="form-select">
+                <option value="">Seleccione su provincia</option>
+                <option value="Panamá">Panamá</option>
+                <option value="Colón">Colón</option>
+                <option value="Chiriquí">Chiriquí</option>
+                <option value="Veraguas">Veraguas</option>
+                <option value="Los Santos">Los Santos</option>
+                <option value="Herrera">Herrera</option>
+                <option value="Coclé">Coclé</option>
+                <option value="Darién">Darién</option>
+                <option value="Panamá Oeste">Panamá Oeste</option>
+                <option value="Bocas del Toro">Bocas del Toro</option>
+                <option value="Comarca Guna Yala">Comarca Guna Yala</option>
+                <option value="Comarca Emberá-Wounaan">Comarca Emberá-Wounaan</option>
+                <option value="Comarca Ngäbe-Buglé">Comarca Ngäbe-Buglé</option>
+              </select>
+            </div>
+
+            <!-- Select para países -->
+            <div class="input-wrapper" id="paisContainer" style="display: none;">
+              <select id="pais" name="Ubicacion" class="form-select">
+                <option value="">Seleccione su país</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Bolivia">Bolivia</option>
+                <option value="Brasil">Brasil</option>
+                <option value="Chile">Chile</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Costa Rica">Costa Rica</option>
+                <option value="Cuba">Cuba</option>
+                <option value="Ecuador">Ecuador</option>
+                <option value="El Salvador">El Salvador</option>
+                <option value="España">España</option>
+                <option value="Estados Unidos">Estados Unidos</option>
+                <option value="Guatemala">Guatemala</option>
+                <option value="Honduras">Honduras</option>
+                <option value="México">México</option>
+                <option value="Nicaragua">Nicaragua</option>
+                <option value="Paraguay">Paraguay</option>
+                <option value="Perú">Perú</option>
+                <option value="Puerto Rico">Puerto Rico</option>
+                <option value="República Dominicana">República Dominicana</option>
+                <option value="Uruguay">Uruguay</option>
+                <option value="Venezuela">Venezuela</option>
+                <option value="Otro">Otro país</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmacion">
+              <i class="fas fa-check-circle"></i>
+              Estado de Confirmación
+            </label>
+            <div class="input-wrapper">
+              <select id="confirmacion" name="Confirmacion" class="form-select">
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="SI">Confirmado - SÍ</option>
+                <option value="NO">Confirmado - NO</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="btnSubmit">
+            <i class="fas fa-paper-plane"></i>
+            Confirmar Asistencia
+          </button>
+        </form>
+
+        <div id="mensaje" class="message" style="display:none;"></div>
+
+        <div class="footer">
+          <p>
+            <i class="fas fa-shield-alt"></i>
+            Sus datos están protegidos y solo serán utilizados para el evento
+          </p>
+        </div>
+      </div>
+
+      <!-- Sección de Productos Ekklesia -->
+      <div class="products-section" id="productsSection">
+        <div class="products-header">
+          <h2>
+            <i class="fas fa-store"></i>
+            Descubre los Productos de Ekklesia
+          </h2>
+          <p>Recursos diseñados para fortalecer el ministerio juvenil en tu iglesia</p>
+        </div>
+
+        <div class="products-grid">
+          <!-- Producto 1: Currículo Juvenil -->
+          <div class="product-card" data-category="curriculum">
+            <div class="product-image">
+              <i class="fas fa-book-open"></i>
+              <div class="product-badge">Nuevo</div>
+            </div>
+            <div class="product-content">
+              <h3>Currículo Juvenil 2025</h3>
+              <p>12 meses de contenido diseñado especialmente para jóvenes de 13-25 años</p>
+              <ul class="product-features">
+                <li><i class="fas fa-check"></i> 52 lecciones interactivas</li>
+                <li><i class="fas fa-check"></i> Material para líderes</li>
+                <li><i class="fas fa-check"></i> Recursos multimedia</li>
+              </ul>
+              <div class="product-price">$89.99</div>
+              <button class="product-btn" onclick="showProductDetails('curriculum')">
+                <i class="fas fa-eye"></i> Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- Producto 2: Kit de Eventos -->
+          <div class="product-card" data-category="events">
+            <div class="product-image">
+              <i class="fas fa-calendar-alt"></i>
+              <div class="product-badge popular">Popular</div>
+            </div>
+            <div class="product-content">
+              <h3>Kit de Eventos Juveniles</h3>
+              <p>Todo lo necesario para organizar eventos memorables en tu ministerio</p>
+              <ul class="product-features">
+                <li><i class="fas fa-check"></i> 15 eventos planificados</li>
+                <li><i class="fas fa-check"></i> Guías de organización</li>
+                <li><i class="fas fa-check"></i> Material promocional</li>
+              </ul>
+              <div class="product-price">$129.99</div>
+              <button class="product-btn" onclick="showProductDetails('events')">
+                <i class="fas fa-eye"></i> Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- Producto 3: Capacitación Online -->
+          <div class="product-card" data-category="training">
+            <div class="product-image">
+              <i class="fas fa-graduation-cap"></i>
+              <div class="product-badge premium">Premium</div>
+            </div>
+            <div class="product-content">
+              <h3>Capacitación para Líderes</h3>
+              <p>Programa completo de formación para líderes juveniles</p>
+              <ul class="product-features">
+                <li><i class="fas fa-check"></i> 8 módulos de capacitación</li>
+                <li><i class="fas fa-check"></i> Certificación incluida</li>
+                <li><i class="fas fa-check"></i> Acceso de por vida</li>
+              </ul>
+              <div class="product-price">$199.99</div>
+              <button class="product-btn" onclick="showProductDetails('training')">
+                <i class="fas fa-eye"></i> Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- Producto 4: Recursos Digitales -->
+          <div class="product-card" data-category="digital">
+            <div class="product-image">
+              <i class="fas fa-mobile-alt"></i>
+              <div class="product-badge">Digital</div>
+            </div>
+            <div class="product-content">
+              <h3>Paquete Digital</h3>
+              <p>Herramientas digitales para conectar con la generación actual</p>
+              <ul class="product-features">
+                <li><i class="fas fa-check"></i> App móvil personalizable</li>
+                <li><i class="fas fa-check"></i> Templates para redes sociales</li>
+                <li><i class="fas fa-check"></i> Sistema de seguimiento</li>
+              </ul>
+              <div class="product-price">$149.99</div>
+              <button class="product-btn" onclick="showProductDetails('digital')">
+                <i class="fas fa-eye"></i> Ver Detalles
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="products-footer">
+          <button class="contact-btn" onclick="openContactModal()">
+            <i class="fas fa-envelope"></i>
+            Contactar para Más Información
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading" class="loading-overlay" style="display:none;">
+    <div class="loading-content">
+      <i class="fas fa-spinner"></i>
+      <p>Procesando registro...</p>
+    </div>
+  </div>
+
+  <!-- Modal de Detalles del Producto -->
+  <div id="productModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Detalles del Producto</h3>
+        <button class="modal-close" onclick="closeModal('productModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeModal('productModal')">Cerrar</button>
+        <button class="btn-primary" onclick="contactForProduct()">
+          <i class="fas fa-shopping-cart"></i> Solicitar Información
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Contacto -->
+  <div id="contactModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Contacta con Ekklesia</h3>
+        <button class="modal-close" onclick="closeModal('contactModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h4>Email</h4>
+              <p>productos@ekklesia.org</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <h4>Teléfono</h4>
+              <p>+507 1234-5678</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-globe"></i>
+            <div>
+              <h4>Sitio Web</h4>
+              <p>www.ekklesia.org</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <i class="fab fa-whatsapp"></i>
+            <div>
+              <h4>WhatsApp</h4>
+              <p>+507 6789-0123</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" onclick="closeModal('contactModal')">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
