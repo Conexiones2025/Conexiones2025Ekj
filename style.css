@@ -187,10 +187,35 @@ label i {
   font-weight: 600;
 }
 
+
 .input-wrapper {
-  position: relative;
-  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 5px;
 }
+
+.eliminar-btn {
+  background-color: transparent;
+  border: none;
+  color: red;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.BotonAñadir {
+
+    background-color: transparent;
+  border: none;
+  color: black;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
 
 .form-input, .form-select {
   width: 100%;

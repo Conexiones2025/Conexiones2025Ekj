@@ -75,6 +75,104 @@ function initializeLocationHandlers() {
     console.log('✅ Manejadores de ubicación inicializados');
 }
 
+// ===== FUNCIONES PARA MANEJO DE ACOMPAÑANTES (OPCIÓN 3) =====
+
+function agregarCampo() {
+    const contenedor = document.getElementById("contenedorNombres");
+    
+    // Remover el botón "Añadir" del campo actual
+    const botonAñadirActual = document.querySelector(".BotonAñadir");
+    if (botonAñadirActual) {
+        botonAñadirActual.remove();
+    }
+
+    // Crear el nuevo campo para acompañante
+    const nuevoCampo = document.createElement("div");
+    nuevoCampo.classList.add("form-group", "nombre-campo", "acompanante");
+    nuevoCampo.innerHTML = `
+        <div class="campo-indicator acompanante">Acompañante</div>
+        <label>
+            <i class="fas fa-user-friends"></i> Nombre del acompañante
+        </label>
+        <div class="input-wrapper">
+            <input type="text" name="NombreAcompanante" class="form-input" maxlength="50" placeholder="Nombre del acompañante" />
+            <button type="button" class="eliminar-btn" onclick="eliminarCampo(this)">❌</button>
+        </div>
+        <button type="button" class="BotonAñadir" onclick="agregarCampo()">➕ Añadir otro acompañante</button>
+    `;
+
+    contenedor.appendChild(nuevoCampo);
+    
+    // Actualizar el resumen y el campo oculto
+    actualizarResumenGrupo();
+}
+
+function eliminarCampo(boton) {
+    const campo = boton.closest(".nombre-campo");
+    const contenedor = document.getElementById("contenedorNombres");
+    
+    // Eliminar el campo
+    campo.remove();
+    
+    // Buscar el último campo restante y añadirle el botón si no lo tiene
+    const campos = contenedor.querySelectorAll(".nombre-campo");
+    const ultimoCampo = campos[campos.length - 1];
+    
+    // Solo añadir el botón si el último campo no lo tiene ya
+    if (ultimoCampo && !ultimoCampo.querySelector(".BotonAñadir")) {
+        const botonAñadir = document.createElement("button");
+        botonAñadir.type = "button";
+        botonAñadir.className = "BotonAñadir";
+        botonAñadir.onclick = agregarCampo;
+        
+        // Cambiar el texto según si es el campo principal o un acompañante
+        if (ultimoCampo.classList.contains('principal')) {
+            botonAñadir.innerHTML = "➕ Añadir acompañante";
+        } else {
+            botonAñadir.innerHTML = "➕ Añadir otro acompañante";
+        }
+        
+        ultimoCampo.appendChild(botonAñadir);
+    }
+    
+    // Actualizar el resumen y el campo oculto
+    actualizarResumenGrupo();
+}
+
+function actualizarResumenGrupo() {
+    // Obtener todos los nombres de acompañantes
+    const nombresAcompanantes = Array.from(document.querySelectorAll('input[name="NombreAcompanante"]'))
+        .map(input => input.value.trim())
+        .filter(nombre => nombre !== "");
+    
+    // Actualizar campo oculto con los acompañantes
+    const hiddenField = document.getElementById('acompanantesHidden');
+    if (hiddenField) {
+        hiddenField.value = nombresAcompanantes.join(', ');
+    }
+    
+    // Mostrar/ocultar y actualizar el resumen
+    const resumenDiv = document.getElementById('resumenGrupo');
+    const textoResumen = document.getElementById('textoResumen');
+    
+    if (nombresAcompanantes.length > 0) {
+        const totalPersonas = nombresAcompanantes.length + 1; // +1 por el principal
+        resumenDiv.style.display = 'block';
+        textoResumen.textContent = `Registro para ${totalPersonas} personas (1 principal + ${nombresAcompanantes.length} acompañantes)`;
+    } else {
+        resumenDiv.style.display = 'none';
+    }
+    
+    console.log('📊 Acompañantes actualizados:', nombresAcompanantes);
+}
+
+// Agregar event listener para actualizar en tiempo real
+document.addEventListener('input', function(e) {
+    if (e.target.name === 'NombreAcompanante') {
+        actualizarResumenGrupo();
+    }
+});
+
 function showLocationContainer(type) {
     if (type === 'provincia') {
         // Mostrar provincias, ocultar países
@@ -133,6 +231,9 @@ async function handleFormSubmit(e) {
         // Recopilar datos del formulario usando FormData
         const formData = new FormData(form);
         
+        // Obtener los acompañantes y agregarlos al FormData
+        actualizarResumenGrupo(); // Asegurar que esté actualizado
+        
         // Manejar la ubicación especialmente
         const tipoUbicacion = document.querySelector('input[name="tipoUbicacion"]:checked');
         if (tipoUbicacion) {
@@ -166,12 +267,13 @@ async function handleFormSubmit(e) {
         
         // Mostrar mensaje de éxito
         showMessage('¡Registro enviado exitosamente! Gracias por confirmar su asistencia.', 'success');
-
+        
         
         // Limpiar formulario
         form.reset();
         resetFieldStyles();
         resetLocationContainers();
+        resetAcompanantes(); // Nueva función para limpiar acompañantes
         
         console.log('✅ Formulario procesado correctamente');
         
@@ -180,6 +282,35 @@ async function handleFormSubmit(e) {
         showMessage(`Error al enviar el formulario: ${error.message}`, 'error');
     } finally {
         showLoading(false);
+    }
+}
+
+function resetAcompanantes() {
+    // Remover todos los campos de acompañantes
+    const acompanantes = document.querySelectorAll('.nombre-campo.acompanante');
+    acompanantes.forEach(campo => campo.remove());
+    
+    // Restablecer el botón en el campo principal
+    const campoPrincipal = document.querySelector('.nombre-campo.principal');
+    if (campoPrincipal && !campoPrincipal.querySelector('.BotonAñadir')) {
+        const botonAñadir = document.createElement("button");
+        botonAñadir.type = "button";
+        botonAñadir.className = "BotonAñadir";
+        botonAñadir.onclick = agregarCampo;
+        botonAñadir.innerHTML = "➕ Añadir acompañante";
+        campoPrincipal.appendChild(botonAñadir);
+    }
+    
+    // Ocultar resumen
+    const resumenDiv = document.getElementById('resumenGrupo');
+    if (resumenDiv) {
+        resumenDiv.style.display = 'none';
+    }
+    
+    // Limpiar campo oculto
+    const hiddenField = document.getElementById('acompanantesHidden');
+    if (hiddenField) {
+        hiddenField.value = '';
     }
 }
 
@@ -337,431 +468,7 @@ function resetLocationContainers() {
         paisSelect.required = false;
     }
 }
-// ========== FUNCIONALIDAD PARA LOS PRODUCTOS ==========
 
-// Datos de productos detallados
-const productDetails = {
-  curriculum: {
-    title: "Currículo Juvenil 2025",
-    description: "Un programa completo de 12 meses diseñado para el crecimiento espiritual de jóvenes entre 13-25 años.",
-    features: [
-      "52 lecciones semanales con temas relevantes",
-      "Material interactivo para líderes y estudiantes",
-      "Recursos multimedia (videos, audios, presentaciones)",
-      "Guías de discusión grupal",
-      "Actividades prácticas y dinámicas",
-      "Sistema de seguimiento de progreso",
-      "Certificado de completación"
-    ],
-    benefits: [
-      "Contenido bíblico profundo pero accesible",
-      "Metodología probada en más de 100 iglesias",
-      "Actualizaciones anuales incluidas",
-      "Soporte técnico y pedagógico"
-    ],
-    price: "$89.99",
-    duration: "12 meses de contenido"
-  },
-  events: {
-    title: "Kit de Eventos Juveniles",
-    description: "Todo lo que necesitas para organizar eventos memorables que impacten la vida de los jóvenes en tu iglesia.",
-    features: [
-      "15 eventos completamente planificados",
-      "Cronogramas detallados paso a paso",
-      "Material promocional editable",
-      "Listas de materiales y presupuestos",
-      "Guías para voluntarios",
-      "Templates para redes sociales",
-      "Ideas de seguimiento post-evento"
-    ],
-    benefits: [
-      "Ahorra más de 100 horas de planificación",
-      "Eventos probados con excelentes resultados",
-      "Adaptable a diferentes tamaños de grupo",
-      "Incluye eventos virtuales y presenciales"
-    ],
-    price: "$129.99",
-    duration: "Acceso de por vida"
-  },
-  training: {
-    title: "Capacitación para Líderes",
-    description: "Programa integral de formación para equipar a líderes juveniles con las herramientas necesarias para un ministerio efectivo.",
-    features: [
-      "8 módulos de capacitación intensiva",
-      "Videos de alta calidad con expertos",
-      "Material de estudio descargable",
-      "Sesiones en vivo mensuales",
-      "Certificación oficial",
-      "Acceso a comunidad privada",
-      "Mentorías personalizadas"
-    ],
-    benefits: [
-      "Capacitación reconocida internacionalmente",
-      "Networking con líderes de toda Latinoamérica",
-      "Actualizaciones de contenido constantes",
-      "Soporte personalizado 24/7"
-    ],
-    price: "$199.99",
-    duration: "Acceso de por vida + certificación"
-  },
-  digital: {
-    title: "Paquete Digital Completo",
-    description: "Herramientas digitales modernas para conectar efectivamente con la generación actual y maximizar el impacto de tu ministerio.",
-    features: [
-      "App móvil personalizable para tu iglesia",
-      "1000+ templates para redes sociales",
-      "Sistema de seguimiento de miembros",
-      "Plataforma de eventos virtuales",
-      "Dashboard de analytics avanzado",
-      "Integración con plataformas populares",
-      "Backup automático en la nube"
-    ],
-    benefits: [
-      "Aumenta la participación juvenil en 40%",
-      "Comunicación más efectiva y directa",
-      "Datos precisos para tomar decisiones",
-      "Presencia digital profesional"
-    ],
-    price: "$149.99",
-    duration: "Licencia anual renovable"
-  }
-};
-
-// Funciones para manejar modales
-function showProductDetails(productId) {
-  const product = productDetails[productId];
-  if (!product) return;
-
-  const modal = document.getElementById('productModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalBody = document.getElementById('modalBody');
-
-  modalTitle.textContent = product.title;
-  
-  modalBody.innerHTML = `
-    <div class="product-detail">
-      <div class="product-detail-header">
-        <div class="product-detail-price">${product.price}</div>
-        <div class="product-detail-duration">${product.duration}</div>
-      </div>
-      
-      <div class="product-detail-description">
-        <p>${product.description}</p>
-      </div>
-
-      <div class="product-detail-section">
-        <h4><i class="fas fa-check-circle"></i> Características Principales</h4>
-        <ul class="detail-list">
-          ${product.features.map(feature => `<li><i class="fas fa-chevron-right"></i>${feature}</li>`).join('')}
-        </ul>
-      </div>
-
-      <div class="product-detail-section">
-        <h4><i class="fas fa-star"></i> Beneficios Exclusivos</h4>
-        <ul class="detail-list benefits">
-          ${product.benefits.map(benefit => `<li><i class="fas fa-gem"></i>${benefit}</li>`).join('')}
-        </ul>
-      </div>
-
-      
-    </div>
-  `;
-
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  
-  // Agregar event listener para cerrar con ESC
-  document.addEventListener('keydown', handleEscapeKey);
-}
-
-function openContactModal() {
-  const modal = document.getElementById('contactModal');
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  
-  // Agregar event listener para cerrar con ESC
-  document.addEventListener('keydown', handleEscapeKey);
-}
-
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  modal.style.display = 'none';
-  document.body.style.overflow = 'auto';
-  
-  // Remover event listener de ESC
-  document.removeEventListener('keydown', handleEscapeKey);
-}
-
-function handleEscapeKey(event) {
-  if (event.key === 'Escape') {
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-      if (modal.style.display === 'flex') {
-        modal.style.display = 'none';
-      }
-    });
-    document.body.style.overflow = 'auto';
-    document.removeEventListener('keydown', handleEscapeKey);
-  }
-}
-
-function contactForProduct() {
-  closeModal('productModal');
-  setTimeout(() => {
-    openContactModal();
-  }, 300);
-}
-
-// Cerrar modal al hacer clic fuera
-window.addEventListener('click', function(event) {
-  const modals = document.querySelectorAll('.modal');
-  modals.forEach(modal => {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-      document.removeEventListener('keydown', handleEscapeKey);
-    }
-  });
-});
-
-// ========== FUNCIONALIDAD DEL FORMULARIO EXISTENTE ==========
-
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('registroForm');
-    const loadingOverlay = document.getElementById('loading');
-    const mensajeDiv = document.getElementById('mensaje');
-    
-    // Manejar cambios en tipo de ubicación
-    const tipoUbicacionRadios = document.querySelectorAll('input[name="tipoUbicacion"]');
-    const provinciaContainer = document.getElementById('provinciaContainer');
-    const paisContainer = document.getElementById('paisContainer');
-    const provinciaSelect = document.getElementById('provincia');
-    const paisSelect = document.getElementById('pais');
-
-    tipoUbicacionRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'localidad') {
-                provinciaContainer.style.display = 'block';
-                paisContainer.style.display = 'none';
-                paisSelect.value = '';
-                paisSelect.removeAttribute('required');
-                provinciaSelect.setAttribute('required', '');
-            } else if (this.value === 'internacional') {
-                paisContainer.style.display = 'block';
-                provinciaContainer.style.display = 'none';
-                provinciaSelect.value = '';
-                provinciaSelect.removeAttribute('required');
-                paisSelect.setAttribute('required', '');
-            }
-        });
-    });
-
-    // Validación de formulario
-    const inputs = form.querySelectorAll('input[required], select[required]');
-    inputs.forEach(input => {
-        input.addEventListener('blur', validateField);
-        input.addEventListener('input', clearValidation);
-    });
-
-    function validateField(e) {
-        const field = e.target;
-        if (field.type === 'email') {
-            validateEmail(field);
-        } else if (field.type === 'tel') {
-            validatePhone(field);
-        } else {
-            validateRequired(field);
-        }
-    }
-
-    function clearValidation(e) {
-        const field = e.target;
-        field.classList.remove('invalid', 'valid');
-    }
-
-    function validateRequired(field) {
-        if (field.value.trim() === '') {
-            field.classList.add('invalid');
-            field.classList.remove('valid');
-            return false;
-        } else {
-            field.classList.add('valid');
-            field.classList.remove('invalid');
-            return true;
-        }
-    }
-
-    function validateEmail(field) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(field.value)) {
-            field.classList.add('invalid');
-            field.classList.remove('valid');
-            return false;
-        } else {
-            field.classList.add('valid');
-            field.classList.remove('invalid');
-            return true;
-        }
-    }
-
-    function validatePhone(field) {
-        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
-        if (!phoneRegex.test(field.value)) {
-            field.classList.add('invalid');
-            field.classList.remove('valid');
-            return false;
-        } else {
-            field.classList.add('valid');
-            field.classList.remove('invalid');
-            return true;
-        }
-    }
-
-    // Envío del formulario
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validar todos los campos requeridos
-        let isValid = true;
-        const requiredFields = form.querySelectorAll('input[required], select[required]');
-        
-        requiredFields.forEach(field => {
-            if (field.type === 'email') {
-                if (!validateEmail(field)) isValid = false;
-            } else if (field.type === 'tel') {
-                if (!validatePhone(field)) isValid = false;
-            } else {
-                if (!validateRequired(field)) isValid = false;
-            }
-        });
-
-        if (!isValid) {
-            showMessage('Por favor, completa todos los campos requeridos correctamente.', 'error');
-            return;
-        }
-
-        // Mostrar loading
-        loadingOverlay.style.display = 'flex';
-        
-        // Simular envío (aquí conectarías con tu backend)
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-            showMessage('¡Registro completado exitosamente! Te contactaremos pronto.', 'success');
-            form.reset();
-            
-            // Limpiar validaciones
-            inputs.forEach(input => {
-                input.classList.remove('valid', 'invalid');
-            });
-            
-            // Ocultar contenedores de ubicación
-            provinciaContainer.style.display = 'none';
-            paisContainer.style.display = 'none';
-        }, 2000);
-    });
-
-    function showMessage(text, type) {
-        mensajeDiv.textContent = text;
-        mensajeDiv.className = `message ${type}`;
-        mensajeDiv.style.display = 'block';
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-            mensajeDiv.style.display = 'none';
-        }, 5000);
-        
-        // Scroll hacia el mensaje
-        mensajeDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-});
-
-// ========== EFECTOS Y ANIMACIONES ADICIONALES ==========
-
-// Intersection Observer para animaciones cuando los elementos entran en vista
-function setupIntersectionObserver() {
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-in');
-      }
-    });
-  }, observerOptions);
-
-  // Observar las tarjetas de productos
-  const productCards = document.querySelectorAll('.product-card');
-  productCards.forEach(card => {
-    observer.observe(card);
-  });
-}
-
-// Lazy loading para imágenes (si agregas imágenes de productos más adelante)
-function setupLazyLoading() {
-  const images = document.querySelectorAll('img[data-src]');
-  
-  const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.remove('lazy');
-        imageObserver.unobserve(img);
-      }
-    });
-  });
-
-  images.forEach(img => imageObserver.observe(img));
-}
-
-// Smooth scroll para navegación interna
-function setupSmoothScroll() {
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    });
-  });
-}
-
-// Inicializar todas las funcionalidades cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-  setupIntersectionObserver();
-  setupLazyLoading();
-  setupSmoothScroll();
-  
-  // Precargar contenido del modal para mejor UX
-  setTimeout(() => {
-    Object.keys(productDetails).forEach(productId => {
-      // Pre-crear contenido del modal para carga más rápida
-      const product = productDetails[productId];
-      if (product) {
-        // El contenido ya está disponible en memoria
-        console.log(`Producto ${productId} precargado`);
-      }
-    });
-  }, 1000);
-});
-
-// Performance monitoring
-if ('performance' in window) {
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const navigation = performance.getEntriesByType('navigation')[0];
-      console.log(`Página cargada en ${navigation.loadEventEnd - navigation.loadEventStart}ms`);
-    }, 0);
-  });
-}
 // Función para debug (opcional)
 function debugFormData() {
     if (!form) {
