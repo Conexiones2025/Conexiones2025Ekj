@@ -47,6 +47,19 @@
     }
   }
   </script>
+  <style>
+    #resumenGrupo {
+      display: none; /* Ocultar inicialmente */
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f0f4ff;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+  </style>
 </head>
 
 <body>
@@ -66,27 +79,15 @@
       </div>
 
       <form id="registroForm" novalidate>
-        <!-- Sección de nombres modificada -->
-        <div id="contenedorNombres">
-            <div class="form-group nombre-campo principal">
-                <label>
-                    <i class="fas fa-user"></i> Nombre Principal <span class="required">*</span>
-                </label>
-                <div class="input-wrapper">
-                    <input type="text" name="Nombre" class="form-input" required maxlength="50"
-                        placeholder="Nombre del responsable del registro" />
-                </div>
-                <button type="button" class="BotonAñadir" onclick="agregarCampo()">➕ Añadir acompañante</button>
-            </div>
-        </div>
-        
-        <!-- Campo oculto para acompañantes -->
-        <input type="hidden" name="Acompanantes" id="acompanantesHidden" value="">
-        
-        <!-- Mostrar resumen cuando hay acompañantes -->
-        <div id="resumenGrupo" class="grupo-info" style="display: none;">
-            <i class="fas fa-users"></i>
-            <span id="textoResumen">Registro para 1 persona</span>
+        <!-- Campo Nombre Principal -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-user"></i> Nombre <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input type="text" name="Nombre" class="form-input" required maxlength="50"
+              placeholder="Tu nombre completo" autocomplete="given-name" />
+          </div>
         </div>
 
         <div class="form-group">
@@ -98,6 +99,44 @@
             <input type="text" id="apellido" name="Apellido" class="form-input" required maxlength="50"
               placeholder="Ingrese su apellido" autocomplete="family-name" />
           </div>
+        </div>
+
+        <!-- Checkbox para acompañantes -->
+        <div class="form-group">
+          <label>
+            <i class="fas fa-users"></i>
+            ¿Vendrás acompañado?
+          </label>
+          <div class="input-wrapper">
+            <div class="checkbox-wrapper" onclick="toggleCheckbox()">
+              <input type="checkbox" id="acompanara" name="Acompanante" onchange="mostrarCampoAcompanantes(this)" hidden/>
+              <span class="checkbox-label">Sí, vendré con acompañantes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor de acompañantes (inicialmente oculto) -->
+        <div class="form-group">
+          <div id="acompanantesContainer" class="acompanantes-container">
+            <label class="acompanantes-label">
+              <i class="fas fa-user-friends"></i>
+              Acompañante
+            </label>
+            <div id="contenedorAcompanantes" class="acompanantes-list">
+              <!-- Aquí se agregarán los campos de acompañantes dinámicamente -->
+            </div>
+                <button type="button" class="BotonAñadir" id="BotonAcomp" onclick="agregarCampo()">➕ Añadir acompañante</button>
+
+          </div>
+        </div>
+
+        <!-- Campo oculto para acompañantes -->
+        <input type="hidden" name="Acompanantes" id="acompanantesHidden" value="">
+
+        <!-- Mostrar resumen cuando hay acompañantes -->
+        <div id="resumenGrupo" class="grupo-info">
+          <i class="fas fa-users"></i>
+          <span id="textoResumen">Registro para 1 persona</span>
         </div>
 
         <div class="form-group">
@@ -175,7 +214,7 @@
               <option value="Comarca Guna Yala">Comarca Guna Yala</option>
               <option value="Comarca Emberá-Wounaan">Comarca Emberá-Wounaan</option>
               <option value="Comarca Ngäbe-Buglé">Comarca Ngäbe-Buglé</option>
-              <option value="Otro">San Miguelito</option>
+              <option value="San Miguelito">San Miguelito</option>
             </select>
           </div>
 
@@ -205,7 +244,6 @@
               <option value="Uruguay">Uruguay</option>
               <option value="Venezuela">Venezuela</option>
               <option value="Otro">Otro país</option>
-
             </select>
           </div>
         </div>
@@ -217,7 +255,7 @@
           </label>
           <div class="input-wrapper">
             <select id="confirmacion" name="Confirmacion" class="form-select">
-              <option value="PENDIENTE">Pendiente</option>
+              <option value="PENDIENTE">Pendiente <label for="PENDIENTE"><i class="fas fa-arrow-down"></i></label></option>
               <option value="SI">Confirmado - SÍ</option>
               <option value="NO">Confirmado - NO</option>
             </select>

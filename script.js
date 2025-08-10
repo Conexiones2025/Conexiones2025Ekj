@@ -9,6 +9,13 @@ let localidadRadio, internacionalRadio, provinciaContainer, paisContainer, provi
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Aplicación cargada correctamente');
     initializeApp();
+    
+    const checkboxWrapper = document.querySelector('.checkbox-wrapper');
+    if (checkboxWrapper) {
+        checkboxWrapper.addEventListener('click', function() {
+            checkboxWrapper.classList.toggle('activo');
+        });
+    }
 });
 
 function initializeApp() {
@@ -75,70 +82,127 @@ function initializeLocationHandlers() {
     console.log('✅ Manejadores de ubicación inicializados');
 }
 
-// ===== FUNCIONES PARA MANEJO DE ACOMPAÑANTES (OPCIÓN 3) =====
-
-function agregarCampo() {
-    const contenedor = document.getElementById("contenedorNombres");
-    
-    // Remover el botón "Añadir" del campo actual
-    const botonAñadirActual = document.querySelector(".BotonAñadir");
-    if (botonAñadirActual) {
-        botonAñadirActual.remove();
+// ===== FUNCIONES PARA MANEJO DE ACOMPAÑANTES =====
+function ocultarCampoAcompanantes() {
+    const container = document.getElementById('BotonAcomp');
+    if (container) { // Corregido de === true
+        container.style.display = 'none';
+        container.classList.remove('fade-in');
+        console.log('❌ Campo de acompañantes ocultado');
     }
+}
 
+// Función para mostrar el botón cuando se elimine el acompañante
+function mostrarBotonAcompanante() {
+    const boton = document.getElementById('BotonAcomp');
+    if (boton) {
+        boton.style.display = 'inline-block';
+        boton.classList.add('fade-in');
+        console.log('✅ Botón de acompañante mostrado');
+    }
+}
+
+// Función para mostrar/ocultar campo de acompañantes
+function mostrarCampoAcompanantes(checkbox) {
+    const container = document.getElementById('acompanantesContainer');
+    const resumenGrupo = document.getElementById('resumenGrupo');
+    
+    if (checkbox.checked) {
+        // Mostrar contenedor con animación
+        container.style.display = 'block';
+        container.classList.add('fade-in');
+        
+        // Mostrar el botón cuando se active el checkbox
+        mostrarBotonAcompanante();
+        
+        console.log('✅ Campo de acompañantes activado');
+    } else {
+        // Ocultar contenedor y limpiar datos
+        container.style.display = 'none';
+        container.classList.remove('fade-in');
+        
+        // Limpiar todos los campos de acompañantes
+        const contenedorAcompanantes = document.getElementById('contenedorAcompanantes');
+        contenedorAcompanantes.innerHTML = '';
+        
+        // Limpiar campo oculto
+        document.getElementById('acompanantesHidden').value = '';
+        
+        // Ocultar resumen
+        resumenGrupo.style.display = 'none';
+        
+        // Mostrar el botón cuando se desactive
+        mostrarBotonAcompanante();
+        
+        console.log('❌ Campo de acompañantes desactivado y limpiado');
+    }
+}
+
+// Función para hacer clic en el checkbox desde el wrapper
+function toggleCheckbox() {
+    const checkbox = document.getElementById('acompanara');
+    checkbox.checked = !checkbox.checked;
+    mostrarCampoAcompanantes(checkbox);
+}
+
+// Función para agregar campo de acompañante - LIMITADO A 1
+function agregarCampo() {
+    const contenedor = document.getElementById("contenedorAcompanantes");
+    
+    // VERIFICAR SI YA EXISTE UN ACOMPAÑANTE
+    const camposExistentes = contenedor.querySelectorAll('.nombre-campo.acompanante');
+    if (camposExistentes.length >= 1) {
+        console.log('⚠️ Solo se permite un acompañante');
+        return; // No hacer nada si ya hay uno
+    }
+    
     // Crear el nuevo campo para acompañante
     const nuevoCampo = document.createElement("div");
-    nuevoCampo.classList.add("form-group", "nombre-campo", "acompanante");
+    nuevoCampo.classList.add("nombre-campo", "acompanante");
     nuevoCampo.innerHTML = `
         <div class="campo-indicator acompanante">Acompañante</div>
         <label>
-            <i class="fas fa-user-friends"></i> Nombre del acompañante
+            <i class="fas fa-user-friends"></i> Nombre del acompañante <span class="required">*</span>
         </label>
         <div class="input-wrapper">
-            <input type="text" name="NombreAcompanante" class="form-input" maxlength="50" placeholder="Nombre del acompañante" />
-            <button type="button" class="eliminar-btn" onclick="eliminarCampo(this)">❌</button>
+            <input type="text" name="NombreAcompanante" class="form-input" maxlength="50" 
+                   placeholder="Nombre y apellido del acompañante" required />
+            <button type="button" class="eliminar-btn" onclick="eliminarCampo(this)" title="Eliminar acompañante">❌</button>
         </div>
-        <button type="button" class="BotonAñadir" onclick="agregarCampo()">➕ Añadir otro acompañante</button>
     `;
 
     contenedor.appendChild(nuevoCampo);
     
+    // Agregar animación al nuevo campo
+    nuevoCampo.classList.add('fade-in');
+    
+    // OCULTAR EL BOTÓN DESPUÉS DE AGREGAR
+    ocultarCampoAcompanantes();
+    
     // Actualizar el resumen y el campo oculto
     actualizarResumenGrupo();
+    
+    console.log('➕ Campo de acompañante agregado');
 }
 
+// Función para eliminar campo de acompañante
 function eliminarCampo(boton) {
     const campo = boton.closest(".nombre-campo");
-    const contenedor = document.getElementById("contenedorNombres");
     
-    // Eliminar el campo
-    campo.remove();
-    
-    // Buscar el último campo restante y añadirle el botón si no lo tiene
-    const campos = contenedor.querySelectorAll(".nombre-campo");
-    const ultimoCampo = campos[campos.length - 1];
-    
-    // Solo añadir el botón si el último campo no lo tiene ya
-    if (ultimoCampo && !ultimoCampo.querySelector(".BotonAñadir")) {
-        const botonAñadir = document.createElement("button");
-        botonAñadir.type = "button";
-        botonAñadir.className = "BotonAñadir";
-        botonAñadir.onclick = agregarCampo;
+    // Eliminar el campo con confirmación
+    if (confirm('¿Estás seguro de que deseas eliminar este acompañante?')) {
+        campo.remove();
         
-        // Cambiar el texto según si es el campo principal o un acompañante
-        if (ultimoCampo.classList.contains('principal')) {
-            botonAñadir.innerHTML = "➕ Añadir acompañante";
-        } else {
-            botonAñadir.innerHTML = "➕ Añadir otro acompañante";
-        }
+        // MOSTRAR EL BOTÓN CUANDO SE ELIMINE
+        mostrarBotonAcompanante();
         
-        ultimoCampo.appendChild(botonAñadir);
+        // Actualizar el resumen y el campo oculto
+        actualizarResumenGrupo();
+        
+        console.log('➖ Campo de acompañante eliminado');
     }
-    
-    // Actualizar el resumen y el campo oculto
-    actualizarResumenGrupo();
 }
-
+// Función para actualizar resumen del grupo
 function actualizarResumenGrupo() {
     // Obtener todos los nombres de acompañantes
     const nombresAcompanantes = Array.from(document.querySelectorAll('input[name="NombreAcompanante"]'))
@@ -155,18 +219,34 @@ function actualizarResumenGrupo() {
     const resumenDiv = document.getElementById('resumenGrupo');
     const textoResumen = document.getElementById('textoResumen');
     
-    if (nombresAcompanantes.length > 0) {
+    // Solo mostrar si el checkbox está marcado
+    const checkbox = document.getElementById('acompanara');
+    if (checkbox && checkbox.checked) {
+        const totalCampos = document.querySelectorAll('input[name="NombreAcompanante"]').length;
         const totalPersonas = nombresAcompanantes.length + 1; // +1 por el principal
+        
         resumenDiv.style.display = 'block';
-        textoResumen.textContent = `Registro para ${totalPersonas} personas (1 principal + ${nombresAcompanantes.length} acompañantes)`;
+        
+        if (totalCampos > 0) {
+            if (nombresAcompanantes.length === totalCampos) {
+                // Todos los campos tienen nombres
+                textoResumen.textContent = `Registro para ${totalPersonas} personas (1 principal + ${nombresAcompanantes.length} acompañante)`;
+            } else {
+                // Algunos campos están vacíos
+                const camposVacios = totalCampos - nombresAcompanantes.length;
+                textoResumen.textContent = `${totalCampos} campo de acompañantes (${camposVacios} pendiente(s) de llenar)`;
+            }
+        } else {
+            textoResumen.textContent = 'Registro para 1 persona - Haz clic en "Añadir acompañante"';
+        }
     } else {
         resumenDiv.style.display = 'none';
     }
     
-    console.log('📊 Acompañantes actualizados:', nombresAcompanantes);
+    console.log('📊 Resumen actualizado - Acompañantes:', nombresAcompanantes.length);
 }
 
-// Agregar event listener para actualizar en tiempo real
+// Event listener para actualizar en tiempo real
 document.addEventListener('input', function(e) {
     if (e.target.name === 'NombreAcompanante') {
         actualizarResumenGrupo();
@@ -268,12 +348,11 @@ async function handleFormSubmit(e) {
         // Mostrar mensaje de éxito
         showMessage('¡Registro enviado exitosamente! Gracias por confirmar su asistencia.', 'success');
         
-        
         // Limpiar formulario
         form.reset();
         resetFieldStyles();
         resetLocationContainers();
-        resetAcompanantes(); // Nueva función para limpiar acompañantes
+        resetAcompanantes();
         
         console.log('✅ Formulario procesado correctamente');
         
@@ -286,19 +365,29 @@ async function handleFormSubmit(e) {
 }
 
 function resetAcompanantes() {
-    // Remover todos los campos de acompañantes
-    const acompanantes = document.querySelectorAll('.nombre-campo.acompanante');
-    acompanantes.forEach(campo => campo.remove());
+    // Desmarcar el checkbox
+    const checkbox = document.getElementById('acompanara');
+    if (checkbox) {
+        checkbox.checked = false;
+    }
     
-    // Restablecer el botón en el campo principal
-    const campoPrincipal = document.querySelector('.nombre-campo.principal');
-    if (campoPrincipal && !campoPrincipal.querySelector('.BotonAñadir')) {
-        const botonAñadir = document.createElement("button");
-        botonAñadir.type = "button";
-        botonAñadir.className = "BotonAñadir";
-        botonAñadir.onclick = agregarCampo;
-        botonAñadir.innerHTML = "➕ Añadir acompañante";
-        campoPrincipal.appendChild(botonAñadir);
+    // Ocultar contenedor de acompañantes
+    const container = document.getElementById('acompanantesContainer');
+    if (container) {
+        container.style.display = 'none';
+        container.classList.remove('fade-in');
+    }
+    
+    // Limpiar todos los campos de acompañantes
+    const contenedorAcompanantes = document.getElementById('contenedorAcompanantes');
+    if (contenedorAcompanantes) {
+        contenedorAcompanantes.innerHTML = '';
+    }
+    
+    // Limpiar campo oculto
+    const hiddenField = document.getElementById('acompanantesHidden');
+    if (hiddenField) {
+        hiddenField.value = '';
     }
     
     // Ocultar resumen
@@ -307,11 +396,7 @@ function resetAcompanantes() {
         resumenDiv.style.display = 'none';
     }
     
-    // Limpiar campo oculto
-    const hiddenField = document.getElementById('acompanantesHidden');
-    if (hiddenField) {
-        hiddenField.value = '';
-    }
+    console.log('🧹 Campos de acompañantes limpiados');
 }
 
 function validateFormData(data) {
@@ -405,7 +490,6 @@ async function sendDataToGoogleSheets(formData) {
         
     } catch (error) {
         console.error('💥 Error en sendDataToGoogleSheets:', error);
-        
         // Si es un error de CORS o timeout, pero sabemos que Google Apps Script funciona así
         if (error.name === 'TypeError' || error.message.includes('fetch') || error.message.includes('CORS')) {
             console.log('⚠️ Error de red detectado, pero los datos podrían haberse enviado');
