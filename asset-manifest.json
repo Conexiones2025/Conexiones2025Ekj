@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Conexiones2025Ekj/static/css/main.d88831f1.css",
+    "main.js": "/Conexiones2025Ekj/static/js/main.b14f640f.js",
+    "index.html": "/Conexiones2025Ekj/index.html",
+    "main.d88831f1.css.map": "/Conexiones2025Ekj/static/css/main.d88831f1.css.map",
+    "main.b14f640f.js.map": "/Conexiones2025Ekj/static/js/main.b14f640f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d88831f1.css",
+    "static/js/main.b14f640f.js"
+  ]
+}
